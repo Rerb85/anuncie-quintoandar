@@ -241,6 +241,14 @@
 
   .wa-icon{width:18px; height:18px; flex-shrink:0;}
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18317164138"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18317164138');
+</script>
 </head>
 <body>
 
@@ -452,9 +460,26 @@
   var WHATSAPP_NUMBER = "5548998638455"; // formato: 55 + DDD + numero, sem espacos ou simbolos
   var MSG = "Ol\u00e1! Vi o an\u00fancio e quero anunciar meu im\u00f3vel para alugar no QuintoAndar.";
   var link = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(MSG);
+
+  // TODO: troque SEU_ROTULO_AQUI pelo rotulo da acao de conversao criada no Google Ads
+  // (Ferramentas e config. > Conversoes > Nova acao de conversao > Site).
+  // O formato correto e algo como "AbC-D_efG-h12", sem o "AW-18317164138/" na frente.
+  var CONVERSION_LABEL = "SEU_ROTULO_AQUI";
+
+  function trackWhatsAppClick(){
+    if (typeof gtag === "function" && CONVERSION_LABEL !== "SEU_ROTULO_AQUI"){
+      gtag("event", "conversion", {
+        "send_to": "AW-18317164138/" + CONVERSION_LABEL
+      });
+    }
+  }
+
   ["cta-hero","cta-final","cta-sticky"].forEach(function(id){
     var el = document.getElementById(id);
-    if(el) el.setAttribute("href", link);
+    if(el){
+      el.setAttribute("href", link);
+      el.addEventListener("click", trackWhatsAppClick);
+    }
   });
 
   // sticky bar shows only after scrolling past hero, hides near footer
