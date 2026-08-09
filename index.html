@@ -461,24 +461,39 @@
   var MSG = "Ol\u00e1! Vi o an\u00fancio e quero anunciar meu im\u00f3vel para alugar no QuintoAndar.";
   var link = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(MSG);
 
-  // TODO: troque SEU_ROTULO_AQUI pelo rotulo da acao de conversao criada no Google Ads
-  // (Ferramentas e config. > Conversoes > Nova acao de conversao > Site).
-  // O formato correto e algo como "AbC-D_efG-h12", sem o "AW-18317164138/" na frente.
-  var CONVERSION_LABEL = "SEU_ROTULO_AQUI";
+  // Rotulo da acao de conversao "Contato" (clique no WhatsApp), criada no Google Ads.
+  var CONVERSION_LABEL = "TJcoCNaQrt4cEOr8pp5E";
 
-  function trackWhatsAppClick(){
-    if (typeof gtag === "function" && CONVERSION_LABEL !== "SEU_ROTULO_AQUI"){
+  // Padrao recomendado pelo Google: so navega para o WhatsApp depois que o
+  // registro da conversao for enviado (ou depois do timeout de seguranca do
+  // proprio gtag, caso o beacon falhe ou seja bloqueado).
+  function gtag_report_conversion(url){
+    var callback = function(){
+      if (typeof(url) !== "undefined"){
+        window.location = url;
+      }
+    };
+    if (typeof gtag === "function"){
       gtag("event", "conversion", {
-        "send_to": "AW-18317164138/" + CONVERSION_LABEL
+        "send_to": "AW-18317164138/" + CONVERSION_LABEL,
+        "value": 1.0,
+        "currency": "BRL",
+        "event_callback": callback
       });
+    } else {
+      callback(); // gtag bloqueado (ex: ad blocker) - navega mesmo assim
     }
+    return false;
   }
 
   ["cta-hero","cta-final","cta-sticky"].forEach(function(id){
     var el = document.getElementById(id);
     if(el){
-      el.setAttribute("href", link);
-      el.addEventListener("click", trackWhatsAppClick);
+      el.setAttribute("href", link); // mantem o link real p/ clique direito, "abrir em nova aba" etc.
+      el.addEventListener("click", function(e){
+        e.preventDefault();
+        gtag_report_conversion(link);
+      });
     }
   });
 
