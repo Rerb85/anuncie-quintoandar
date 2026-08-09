@@ -490,7 +490,10 @@
   // registro da conversao for enviado (ou depois do timeout de seguranca do
   // proprio gtag, caso o beacon falhe ou seja bloqueado).
   function gtag_report_conversion(url){
+    var navigated = false;
     var callback = function(){
+      if (navigated) return;
+      navigated = true;
       if (typeof(url) !== "undefined"){
         window.location = url;
       }
@@ -505,6 +508,7 @@
     } else {
       callback(); // gtag bloqueado (ex: ad blocker) - navega mesmo assim
     }
+    setTimeout(callback, 1000); // rede de seguranca: nunca prende o clique por mais de 1s
     return false;
   }
 
