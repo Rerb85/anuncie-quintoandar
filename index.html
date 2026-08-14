@@ -826,10 +826,8 @@
   var errorBox = document.getElementById('form-error');
   var submitBtn = document.getElementById('submit-btn');
 
-  // TODO: troque AW-18317164138/SEU_ROTULO_DE_CADASTRO_AQUI pelo rotulo da
-  // acao de conversao "Cadastro de Imovel" criada no Google Ads (mesma logica
-  // que ja usamos pra "Clique no WhatsApp" na landing page principal).
-  var FORM_CONVERSION_LABEL = 'SEU_ROTULO_DE_CADASTRO_AQUI';
+  // Rotulo da acao de conversao "Cadastro de Imovel", criada no Google Ads.
+  var FORM_CONVERSION_LABEL = 'JHYZCPnv2uEcEOr8pp5E';
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
@@ -844,7 +842,7 @@
       headers: { 'Accept': 'application/json' }
     }).then(function(response){
       if (response.ok) {
-        if (typeof gtag === 'function' && FORM_CONVERSION_LABEL !== 'SEU_ROTULO_DE_CADASTRO_AQUI') {
+        if (typeof gtag === 'function') {
           gtag('event', 'conversion', {
             'send_to': 'AW-18317164138/' + FORM_CONVERSION_LABEL
           });
