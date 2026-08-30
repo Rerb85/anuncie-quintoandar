@@ -598,6 +598,10 @@
         <input type="text" id="nome" name="Nome completo" required autocomplete="name">
       </div>
       <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="E-mail" placeholder="seuemail@exemplo.com" required autocomplete="email">
+      </div>
+      <div class="field">
         <label for="telefone">Telefone com DDD</label>
         <input type="tel" id="telefone" name="Telefone" placeholder="(48) 99999-9999" required autocomplete="tel" inputmode="numeric">
       </div>
@@ -652,7 +656,7 @@
           <label class="radio-card"><input type="radio" name="Tipo de imóvel" value="Kitnet ou Studio">Kitnet / Studio</label>
         </div>
       </div>
-      <div class="row-3">
+      <div class="row">
         <div class="field">
           <label for="quartos">Quartos</label>
           <select id="quartos" name="Quartos" required>
@@ -663,6 +667,18 @@
             <option>4 ou mais</option>
           </select>
         </div>
+        <div class="field">
+          <label for="banheiros">Banheiros</label>
+          <select id="banheiros" name="Banheiros" required>
+            <option value="" disabled selected>Selecione</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4 ou mais</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
         <div class="field">
           <label for="mobiliado">Mobília</label>
           <select id="mobiliado" name="Mobiliado" required>
@@ -824,7 +840,15 @@
   // ---- Mascara de telefone ----
   var telInput = document.getElementById('telefone');
   telInput.addEventListener('input', function(){
-    var d = telInput.value.replace(/\D/g, '').slice(0, 11);
+    var d = telInput.value.replace(/\D/g, '');
+    // Se a pessoa digitou o DDI 55 sem querer antes do numero (13-14 digitos
+    // comecando com 55), remove só esse prefixo - nao mexe em DDDs reais que
+    // comecam com 5 (ex: 51, 53, 54, 55 do Rio Grande do Sul), pois esses tem
+    // no maximo 11 digitos no total.
+    if (d.length > 11 && d.slice(0,2) === '55') {
+      d = d.slice(2);
+    }
+    d = d.slice(0, 11);
     if (d.length > 6) {
       telInput.value = '(' + d.slice(0,2) + ') ' + d.slice(2,7) + '-' + d.slice(7);
     } else if (d.length > 2) {
