@@ -589,8 +589,10 @@
 
   <div id="form-error" role="alert">Não deu pra enviar agora. Confira os campos destacados abaixo, ou fala comigo direto pelo WhatsApp.</div>
 
-  <form id="property-form" action="https://formspree.io/f/myegpbjr" method="POST">
-    <input type="hidden" name="_subject" value="Novo cadastro de imóvel - QuintoAndar">
+  <form id="property-form" action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="371e1b98-52ae-4caa-b0c3-346458b42388">
+    <input type="hidden" name="subject" value="Novo cadastro de imóvel - QuintoAndar">
+    <input type="checkbox" name="botcheck" id="botcheck" style="display:none" tabindex="-1" autocomplete="off">
 
     <fieldset>
       <legend>Seus dados</legend>
@@ -859,7 +861,7 @@
     }
   });
 
-  // ---- Envio via AJAX (Formspree) ----
+  // ---- Envio via AJAX (Web3Forms) ----
   var form = document.getElementById('property-form');
   var errorBox = document.getElementById('form-error');
   var submitBtn = document.getElementById('submit-btn');
@@ -873,13 +875,28 @@
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
 
-    var data = new FormData(form);
+    // Web3Forms exige o corpo em JSON (nao FormData) quando enviado via fetch.
+    var payload = {};
+    new FormData(form).forEach(function(value, key){
+      payload[key] = value;
+    });
+    // Ajuda o Web3Forms a identificar remetente/e-mail de resposta.
+    if (payload['E-mail']) { payload.replyto = payload['E-mail']; }
+    if (payload['Nome completo']) { payload.from_name = payload['Nome completo']; }
+
     fetch(form.action, {
       method: 'POST',
-      body: data,
-      headers: { 'Accept': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
     }).then(function(response){
-      if (response.ok) {
+      return response.json().then(function(result){
+        return { ok: response.ok, result: result };
+      });
+    }).then(function(res){
+      if (res.ok && res.result && res.result.success) {
         if (typeof gtag === 'function') {
           gtag('event', 'conversion', {
             'send_to': 'AW-18317164138/' + FORM_CONVERSION_LABEL
